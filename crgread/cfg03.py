@@ -12,11 +12,6 @@ with open(f"{filename}", "r") as configfile:
 
 ## each item of the list now has the "\n" characters back
 print(configlist)
-num_lines= 0
-for line in configlist:
-    if line.startswith("\n"):
-        pass
-    else:
-        num_lines +=1
+num_lines = len(configlist)
+print(f"Using the len() function, we see there are: {num_lines} line")
 
-print(f"The number of line in the file is: {num_lines}")
