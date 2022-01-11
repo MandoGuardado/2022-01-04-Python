@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 def federal_tax():
-    string_income = input("Please enter you yearly income tax: ")
+    string_income = input("Please enter your yearly income tax: ")
     int_income = int(string_income)
     federal_taxes = 0
     if int_income > 523600:
@@ -31,6 +31,7 @@ def federal_tax():
     else:
         print("10% of the taxable income")
         federal_taxes = int_income * 0.10
+    #     
 
     print("Your total income: $" + string_income + ", Your Federal Tax responsibility is: $" + str(federal_taxes))
 
