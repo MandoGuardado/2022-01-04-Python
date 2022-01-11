@@ -133,3 +133,5 @@ dmypy.json
 
 #file that contains API keys
 config.py
+
+nasa.creds
