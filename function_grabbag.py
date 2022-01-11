@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-
+# 1
 def max_number(first, second, third):
     max_value = first
     if second > max_value:
@@ -10,6 +10,7 @@ def max_number(first, second, third):
     return max_value
 
 
+# 2
 def sum_values(numbers):
     values_sum = 0
     for number in numbers:
@@ -17,6 +18,7 @@ def sum_values(numbers):
     return values_sum
 
 
+# 3
 def multiply_values(numbers):
     number_result = 1
     for number in numbers:
@@ -25,6 +27,7 @@ def multiply_values(numbers):
     return number_result
 
 
+# 7
 def unique_values(numbers):
     unique_list = []
     for number in numbers:
