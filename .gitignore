@@ -130,3 +130,6 @@ dmypy.json
 
 #PyCharm metadata files
 .idea/
+
+#file that contains API keys
+config.py
