@@ -22,7 +22,7 @@ def ciscoios():
         # user passes mtu= or default "1450"
         qparms["mtusize"] = request.args.get("mtu", "1450")
 
-        # render template and save as baseIOS.conf
+        # render templates and save as baseIOS.conf
         return render_template("baseIOS.conf.j2", **qparms)
 
     except Exception as err:

@@ -7,8 +7,8 @@ app = Flask(__name__)
 # pull in the value of score as an int
 @app.route("/scoretest/<int:score>")
 def hello_name(score):
-    # render the template with the value of score for marks
-    # marks is a jinja var in the template
+    # render the templates with the value of score for marks
+    # marks is a jinja var in the templates
     return render_template("highscore.html", marks = score)
 
 if __name__ == "__main__":
