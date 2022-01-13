@@ -137,3 +137,4 @@ config.py
 nasa.creds
 marvel.priv
 marvel.pub
+omdb.key
