@@ -1,0 +1,16 @@
+<!doctype html>
+<html lan="en">
+<head>
+
+</head>
+   <body>
+   <h1>Attempting to return:</h1>
+
+    <h2>Using Jinja2, we get</h2>
+    <ul>
+    {% for host in grp %}
+    <li>{{host.ip}} {{host.fqdn}} # {{host.hostname}}</li>
+    {% endfor %}
+    </ul>
+   </body>
+</html>

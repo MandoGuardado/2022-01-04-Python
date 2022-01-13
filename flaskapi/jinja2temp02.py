@@ -7,7 +7,7 @@ app = Flask(__name__)
 #grab the value 'username'
 @app.route("/<username>")
 def index(username):
-    # render the jinja template "helloname.html"
+    # render the jinja templates "helloname.html"
     # apply the value of username for the var name
     return render_template("helloname.html", name = username)
 
