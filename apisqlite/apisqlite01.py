@@ -26,6 +26,21 @@ def movielookup(mykey, searchstring):
     except:
         return False
 
+
+def movielookuptype(mykey, searchstring, type):
+    """Interactions with OMDB API
+       mykey = omdb api key
+       searchstring = string to search for"""
+    try:
+        # begin constructing API
+        api = f"{OMDBURL}apikey={mykey}&s={searchstring}&type={type}"
+
+        ## open URL to return 200 response
+        resp = requests.get(api)
+        ## read the file-like object decode JSON to Python data structure
+        return resp.json()
+    except:
+        return False
 def trackmeplease(datatotrack):
     conn = sqlite3.connect('mymovie.db')
     try:
@@ -84,8 +99,10 @@ def main():
             if answer == "1":
                 resp = movielookup(mykey, searchstring)
             elif answer == "2":
-                print("\nSearch by type coming soon!\n") # maybe you can write this code!
-                continue                                 # restart the while loop
+                searchtype = input("Enter type: ")
+                resp = movielookuptype(mykey, searchstring, searchtype)
+                # print("\nSearch by type coming soon!\n") # maybe you can write this code!
+                # continue                                 # restart the while loop
             if resp:
                 # display the results
                 resp = resp.get("Search")
