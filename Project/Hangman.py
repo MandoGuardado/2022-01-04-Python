@@ -53,6 +53,8 @@ def print_dashboard(d_frame):
         by="score", ascending=False).head(
         5).to_string(index=False))
     print("\n\n")
+
+
 def print_menu_options(menu):
     print("Please select from the following options:\n")
     for key in menu.keys():
@@ -96,7 +98,7 @@ def validate_user(df, first_menu, second_menu):
                     clear_console()
                     user_name = input("Please provide user name?\n")
                     if df[df.user_name == user_name].empty:
-                        print("User name not found! Please try again\n")
+                        print("\nUser name not found! Please try again\n")
                     else:
                         correct_user = True
                     while not correct_password and correct_user:
@@ -114,7 +116,7 @@ def validate_user(df, first_menu, second_menu):
                             done_submenu = True
                         else:
                             clear_console()
-                            print("That is the wrong password, Please try again!\n")
+                            print(f"\nThat is the wrong password for user: {user_name}, Please try again!\n")
                 elif response2 == "2":
                     done_submenu = True
                     clear_console()
