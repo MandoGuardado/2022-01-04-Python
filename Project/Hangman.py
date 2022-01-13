@@ -13,18 +13,20 @@ def main():
     clear_console()
     csv_file = "user_data.csv"
     users_df = pd.read_csv(csv_file)
-    dashboard = create_dashboard(users_df)
     response = validate_user(users_df, main_menu, sub_menu)
     (player, validation) = response
     if validation:
+        clear_console()
+        print_welcome_banner(player['user_name'])
         finish_playing = False
         total_player_score = int(player['score'])
         while not finish_playing:
-            response = print_menu(opening_menu)
+            response = print_menu_options(opening_menu)
             if response == "1":
                 total_player_score += hangman_game(total_player_score)
             elif response == "2":
-                print(dashboard)
+                clear_console()
+                print_dashboard(users_df)
             elif response == "3":
                 finish_playing = True
             else:
@@ -43,29 +45,37 @@ def update_player(player):
         fd.write(f'\n{player["user_name"]},{player["name"]},{player["password"]},{player["score"]}')
 
 
-def create_dashboard(d_frame):
-    return pd.DataFrame(d_frame, columns=["user_name", "name", "score"]).sort_values(
+def print_dashboard(d_frame):
+    print("\n-----------------------------------------")
+    print("     *     Hangman's TOP 5 Player    *     ")
+    print("-----------------------------------------\n")
+    print(pd.DataFrame(d_frame, columns=["user_name", "name", "score"]).sort_values(
         by="score", ascending=False).head(
-        5).to_string(index=False)
-
-
-def print_menu(menu):
-    print("Please select from the following options:")
+        5).to_string(index=False))
+    print("\n\n")
+def print_menu_options(menu):
+    print("Please select from the following options:\n")
     for key in menu.keys():
         print(key, '--', menu[key])
-    return input("Enter your choice: ").lower()
+    return input("\nEnter your choice: ").lower()
 
 
-def print_mainmenu():
-    print("-----------------------------------------")
+def print_main_menu_banner():
+    print("\n-----------------------------------------")
     print("     ***     Main Menu      ***          ")
-    print("-----------------------------------------")
+    print("-----------------------------------------\n")
 
 
-def print_submenu():
-    print("-----------------------------------------")
+def print_submenu_banner():
+    print("\n-----------------------------------------")
     print("     ***      Submenu      ***           ")
-    print("-----------------------------------------")
+    print("-----------------------------------------\n")
+
+
+def print_welcome_banner(name):
+    print("\n-----------------------------------------")
+    print(f"   *    Welcome {name}      *       ")
+    print("-----------------------------------------\n")
 
 
 def validate_user(df, first_menu, second_menu):
@@ -73,15 +83,17 @@ def validate_user(df, first_menu, second_menu):
     validated = False
     quit_program = False
     while not validated and not quit_program:
-        print_mainmenu()
-        response = print_menu(first_menu)
+        print_main_menu_banner()
+        response = print_menu_options(first_menu)
         if response == "1":
             done_submenu = False
             while not done_submenu:
-                response2 = print_menu(second_menu)
+                print_submenu_banner()
+                response2 = print_menu_options(second_menu)
                 if response2 == "1":
                     correct_user = False
                     correct_password = False
+                    clear_console()
                     user_name = input("Please provide user name?\n")
                     if df[df.user_name == user_name].empty:
                         print("User name not found! Please try again\n")
@@ -92,6 +104,7 @@ def validate_user(df, first_menu, second_menu):
                         password_input = input("Please enter password:\n")
                         password_bool = row.password.to_string(index=False) == password_input
                         if password_bool:
+                            clear_console()
                             correct_password = True
                             player["user_name"] = row.user_name.to_string(index=False)
                             player["name"] = row.name.to_string(index=False)
@@ -100,9 +113,11 @@ def validate_user(df, first_menu, second_menu):
                             validated = True
                             done_submenu = True
                         else:
+                            clear_console()
                             print("That is the wrong password, Please try again!\n")
                 elif response2 == "2":
                     done_submenu = True
+                    clear_console()
                 else:
                     print("The selection made is not available. Try Again")
         elif response == "2":
@@ -120,6 +135,7 @@ def validate_user(df, first_menu, second_menu):
                     user_name = input("User name is already taken, please try again:\n")
         elif response == "3":
             quit_program = True
+            clear_console()
         else:
             print("The selection made is not available. Try Again!")
     return tuple((player, validated))
