@@ -188,14 +188,20 @@ def play_game(player_score):
     while not game_over:
         guess_letter = input("\n\tGuess a letter: ")
         clear_console()
-        if guess_letter in display_word:
+        if guess_letter in word and guess_letter not in display_word:
+            for x in range(len(word)):
+                character = word[x]
+                if character == guess_letter:
+                    print("\nAwesome! guess letter is found.")
+                    display_word[x] = guess_letter
+                    current_score += 10
+            if "_" not in display_word:
+                clear_console()
+                game_over = True
+                print("\nAwesome you won!\n")
+        elif guess_letter in display_word:
             print(f"\nYour already guessed the letter: {guess_letter}")
-        for x in range(len(word)):
-            character = word[x]
-            if character == guess_letter:
-                print("\nAwesome! guess letter is found.")
-                display_word[x] = guess_letter
-                current_score += 10
+
         if guess_letter not in word:
             clear_console()
             current_score -= 1
@@ -206,10 +212,6 @@ def play_game(player_score):
                 current_score -= 10
                 game_over = True
                 print("\nYou lost this round")
-        if "_" not in display_word:
-            clear_console()
-            game_over = True
-            print("\nAwesome you won!\n")
         game_display(lives, display_word, current_score)
     return current_score
 
