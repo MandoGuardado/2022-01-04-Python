@@ -15,13 +15,17 @@ def start():
     clear_console()
     csv_file = "user_data.csv"
     users_df = pd.read_csv(csv_file)
+    # Calls function that retrieves previous record or creates new user,
+    # returns a tuple(player (dict), validation(boolean))
     response = login_user(users_df, main_menu, sub_menu)
-    (player, validation) = response
+    (player, validation) = response # unpacks tuple being returned
+    # Checks to ensure user retrieved old record or created new user
     if validation:
         clear_console()
         print_welcome_title(player['user_name'])
-        finish_playing = False
+        finish_playing = False  # boolean used to end while loop when player is done playing
         total_player_score = int(player['score'])
+        # User had three options of either start playing, requesting the current Dashboard, or quit game
         while not finish_playing:
             response = create_menu(opening_menu)
             if response == "1":
@@ -34,6 +38,7 @@ def start():
             else:
                 print("\n\nPlease select one of available options available.")
         clear_console()
+        # After user is done then csv file is updated, either updating new user or updating previous user
         update_csv_file(users_df, player, total_player_score)
     else:
         print("\n\nIn order to play you must retrieve your old record or create a new one. Please come back soon ")
@@ -43,8 +48,11 @@ def start():
 # Function to update the .csv file - removes user record
 def update_csv_file(df, user, current_score):
     user['score'] = current_score
+    # Using .loc to keep all rows that don't match the desired user_name
     df = df.loc[df['user_name'] != user['user_name']]
+    # using .to_csv() to write to file, using index parameter to not write the row index
     df.to_csv('user_data.csv', index=False)
+    # add the individual user record to file
     with open('user_data.csv', 'a') as fd:
         fd.write(f'\n{user["user_name"]},{user["name"]},{user["password"]},{str(user["score"])}')
 
@@ -64,10 +72,13 @@ def print_dashboard(d_frame):
     print("\n-----------------------------------------")
     print("     *     Hangman's TOP 5 Player    *     ")
     print("-----------------------------------------\n")
+    # Using sort_values() to sort DataFrame (using 'by' parameter and 'ascending'
+    # Using .head() to determine the number of records you want to print
+    # Using to_string() to convert to string and use parameter 'index' to not print index value
     print(pd.DataFrame(d_frame, columns=["user_name", "name", "score"]).sort_values(
         by="score", ascending=False).head(
         5).to_string(index=False))
-    # print("\n\n")
+    print("\n\n")
 
 
 # Function to create menu accepting a dict
@@ -117,6 +128,7 @@ def login_user(df, first_menu, second_menu):
                     correct_password = False
                     clear_console()
                     user_name = input("Please provide user name?\n")
+                    #
                     if df[df.user_name == user_name].empty:
                         print("\nUser name not found! Please try again\n")
                     else:
@@ -163,7 +175,7 @@ def login_user(df, first_menu, second_menu):
     return tuple((player, validated))
 
 
-# function that clear the screen
+# function that clear the screen (found this online)
 def clear_console():
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
