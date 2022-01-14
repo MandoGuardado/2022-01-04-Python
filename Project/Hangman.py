@@ -203,7 +203,7 @@ def play_game(player_score: int):
     clear_console()
     lives = len(HANGMANPICS) - 1  # uses the size of the hangman images list length to determine lives
     word = game_words[randint(0, len(game_words))]  # randomly selects a word form the list in words.py
-    # print(word) #here for testing purposes
+    print(word) # here for testing purposes
     display_placeholder = []  # starting empty list placeholder
     # for loops to apply '_'(underscore) as placeholder for each letter in word
     for x in word:
