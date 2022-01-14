@@ -14,17 +14,17 @@ def start():
     clear_console()
     csv_file = "user_data.csv"
     users_df = pd.read_csv(csv_file)
-    response = validate_user(users_df, main_menu, sub_menu)
+    response = login_user(users_df, main_menu, sub_menu)
     (player, validation) = response
     if validation:
         clear_console()
-        print_welcome_banner(player['user_name'])
+        print_welcome_title(player['user_name'])
         finish_playing = False
         total_player_score = int(player['score'])
         while not finish_playing:
             response = create_menu(opening_menu)
             if response == "1":
-                total_player_score = hangman_game(total_player_score)
+                total_player_score = play_game(total_player_score)
             elif response == "2":
                 clear_console()
                 print_dashboard(users_df)
@@ -33,13 +33,13 @@ def start():
             else:
                 print("\n\nPlease select one of available options available.")
         clear_console()
-        update_user_records(users_df, player, total_player_score)
+        update_csv_file(users_df, player, total_player_score)
     else:
         print("\n\nIn order to play you must retrieve your old record or create a new one. Please come back soon ")
     print("\n\nSee you next time....")
 
 
-def update_user_records(df, user, current_score):
+def update_csv_file(df, user, current_score):
     if current_score > user['score']:
         user['score'] = current_score
         df = df.loc[df['user_name'] != user['user_name']]
@@ -53,7 +53,7 @@ def update_user_records(df, user, current_score):
     print(print_dashboard(pd.read_csv('user_data.csv')))
 
 
-def update_player(player):
+def insert_row_csv_file(player):
     with open('user_data.csv', 'a') as fd:
         fd.write(f'\n{player["user_name"]},{player["name"]},{player["password"]},{player["score"]}')
 
@@ -65,7 +65,7 @@ def print_dashboard(d_frame):
     print(pd.DataFrame(d_frame, columns=["user_name", "name", "score"]).sort_values(
         by="score", ascending=False).head(
         5).to_string(index=False))
-    print("\n\n")
+    # print("\n\n")
 
 
 def create_menu(menu):
@@ -75,35 +75,35 @@ def create_menu(menu):
     return input("\nEnter your choice: ").lower()
 
 
-def print_main_menu_banner():
-    print("\n-----------------------------------------")
-    print("     ***     Main Menu      ***          ")
-    print("-----------------------------------------\n")
-
-
-def print_submenu_banner():
+def print_submenu_title():
     print("\n-----------------------------------------")
     print("     ***      Submenu      ***           ")
     print("-----------------------------------------\n")
 
 
-def print_welcome_banner(name):
+def print_main_menu_title():
+    print("\n-----------------------------------------")
+    print("     ***     Main Menu      ***          ")
+    print("-----------------------------------------\n")
+
+
+def print_welcome_title(name):
     print("\n-----------------------------------------")
     print(f"   *    Welcome {name}!      *       ")
     print("-----------------------------------------\n")
 
 
-def validate_user(df, first_menu, second_menu):
+def login_user(df, first_menu, second_menu):
     player = {}
     validated = False
     quit_program = False
     while not validated and not quit_program:
-        print_main_menu_banner()
+        print_main_menu_title()
         response = create_menu(first_menu)
         if response == "1":
             done_submenu = False
             while not done_submenu:
-                print_submenu_options()
+                print_submenu_title()
                 response2 = create_menu(second_menu)
                 if response2 == "1":
                     correct_user = False
@@ -175,7 +175,7 @@ def game_display(lives, display_word, player_score):
     print("\n-----------------------------------------\n")
 
 
-def hangman_game(player_score):
+def play_game(player_score):
     current_score = player_score
     clear_console()
     lives = len(HANGMANPICS) - 1
