@@ -40,7 +40,6 @@ def start():
 
 
 def update_csv_file(df, user, current_score):
-
     user['score'] = current_score
     df = df.loc[df['user_name'] != user['user_name']]
     df.to_csv('user_data.csv', index=False)
@@ -174,45 +173,58 @@ def game_display(lives, display_word, player_score):
     print("\n-----------------------------------------\n")
 
 
-def play_game(player_score):
+# Function that controls the flow of the game. Determine is letter needs to be displayed ,
+# how lives left, and points accumulation (Accepts a user score)
+def play_game(player_score: int):
     current_score = player_score
     clear_console()
-    lives = len(HANGMANPICS) - 1
-    word = game_words[randint(0, len(game_words))]
-    print(word)
-    display_word = []
+    lives = len(HANGMANPICS) - 1  # uses the size of the hangman images list length to determine lives
+    word = game_words[randint(0, len(game_words))]  # randomly selects a word form the list in words.py
+    # print(word) #here for testing purposes
+    display_placeholder = []     # starting empty list placeholder
+    # for loops to apply '_'(underscore) as placeholder for each letter in word
     for x in word:
-        display_word.append("_")
+        display_placeholder.append("_")
+    # boolean to determine when while loop below is done
     game_over = False
-    game_display(lives, display_word, current_score)
+    # initial display banner
+    game_display(lives, display_placeholder, current_score)
+    # while loop that use game_over variable value to determine if player won or lost the game
     while not game_over:
         guess_letter = input("\n\tGuess a letter: ")
         clear_console()
-        if guess_letter in word and guess_letter not in display_word:
+        # If statement to determine if the guessed letter is in the random word and it has not been displayed
+        if guess_letter in word and guess_letter not in display_placeholder:
             for x in range(len(word)):
                 character = word[x]
                 if character == guess_letter:
                     print("\nAwesome! guess letter is found.")
-                    display_word[x] = guess_letter
+                    display_placeholder[x] = guess_letter
                     current_score += 10
-            if "_" not in display_word:
+            # if after found letter are displayed then it checks to see if there are any '_' (underscore)
+            # left in display placeholder, if true then user winds game
+            if "_" not in display_placeholder:
                 clear_console()
                 game_over = True
                 print("\nAwesome you won!\n")
-        elif guess_letter in display_word:
+        # checks to see if letter is in random word but has already been displayed
+        elif guess_letter in display_placeholder:
             print(f"\nYour already guessed the letter: {guess_letter}")
-
+        # If statement when letter is not in word then user looses a live, points are lost, and checks
+        # to see if you are out of lives
         if guess_letter not in word:
             clear_console()
             current_score -= 1
             lives -= 1
             print(f"\nGuess letter \'{guess_letter}\' is not in the word. You have {lives} lives left ")
+            # Checks to see if user is out of lives, if true then user looses game
             if lives == 0:
                 clear_console()
                 current_score -= 10
                 game_over = True
                 print("\nYou lost this round")
-        game_display(lives, display_word, current_score)
+        # displays updated banner
+        game_display(lives, display_placeholder, current_score)
     return current_score
 
 
