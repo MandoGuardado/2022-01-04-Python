@@ -31,14 +31,11 @@ def start():
             elif response == "3":
                 finish_playing = True
             else:
-                print("Please select one of options available.")
-        player['score'] = total_player_score
-        # TODO Save score into user_data.csv with update score (using method)
+                print("\n\nPlease select one of available options available.")
+        clear_console()
+        update_user_records(users_df, player, total_player_score)
     else:
-        print("In order to play you must retrieve your old record or create a new one. Please come back soon ")
-    # Testing purposeses
-    # hangman_game(0)
-    # print(player)
+        print("\n\nIn order to play you must retrieve your old record or create a new one. Please come back soon ")
     print("\n\nSee you next time....")
 
 
@@ -52,7 +49,7 @@ def update_user_records(df, user, current_score):
     else:
         print("\n\nRecord was not update or created.")
     print("\n\nThanks for playing!\n\n")
-    print("\n\nTake a look at our Scoreboard.\n\n")
+    print("\n\nTake a look at the Scoreboard.\n\n")
     print(print_dashboard(pd.read_csv('user_data.csv')))
 
 
@@ -92,7 +89,7 @@ def print_submenu_banner():
 
 def print_welcome_banner(name):
     print("\n-----------------------------------------")
-    print(f"   *    Welcome {name}      *       ")
+    print(f"   *    Welcome {name}!      *       ")
     print("-----------------------------------------\n")
 
 
