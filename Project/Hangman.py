@@ -1,129 +1,163 @@
-# Task 1:  Title is displayed - Completed
-# Task 2:  Prompt user for name
-#  Task 3:  Prompt user if they want to see Stats (read from file) or begin Playing, or quit
-#  IF player opts to see stats, will access file and print details
-# IF player opts  to quit, current score will be saved if higher than previous score
-#  IF player opts to play
-# generate workd and underscore values with image
-# prompts user to letter or to solve
-#           If user chooses letter:
-#              If user guess right letter. then they are displayed with effect to handmand image
-#               if user guess wrong letter, then hangman image changes
-#             If user chooses to solve
-#                 If guess is right then congratulating message
-#                 if guess is wrong then hangman image changes
-
 from header import title
 from words import game_words
 from random import randint
+from hangman_images import HANGMANPICS
 import pandas as pd
+from menus import main_menu, sub_menu, opening_menu
+import os
 
 
-# print(title)
-
-
-def main():
-    # name = input("What is your user name?: \n")
+# Initial function that get called to start the application
+def start():
+    # Greeting at the star of application
+    print(title)
+    input("Press enter to continue...\n")
+    clear_console()
     csv_file = "user_data.csv"
     users_df = pd.read_csv(csv_file)
-    dashboard = create_dashboard(users_df)
-    print(dashboard)
-    player = validate_user(users_df)
-    print(player)
+    # Calls function that retrieves previous record or creates new user,
+    # returns a tuple(player (dict), validation(boolean))
+    response = login_user(users_df, main_menu, sub_menu)
+    (player, validation) = response # unpacks tuple being returned
+    # Checks to ensure user retrieved old record or created new user
+    if validation:
+        clear_console()
+        print_welcome_title(player['user_name'])
+        finish_playing = False  # boolean used to end while loop when player is done playing
+        total_player_score = int(player['score'])
+        # User had three options of either start playing, requesting the current Dashboard, or quit game
+        while not finish_playing:
+            response = create_menu(opening_menu)
+            if response == "1":
+                total_player_score = play_game(total_player_score)
+            elif response == "2":
+                clear_console()
+                print_dashboard(users_df)
+            elif response == "3":
+                finish_playing = True
+            else:
+                print("\n\nPlease select one of available options available.")
+        clear_console()
+        # After user is done then csv file is updated, either updating new user or updating previous user
+        update_csv_file(users_df, player, total_player_score)
+    else:
+        print("\n\nIn order to play you must retrieve your old record or create a new one. Please come back soon ")
+    print("\n\nSee you next time....")
 
-    # This is done at the end when player is done playing and they need to update their score
-    # how to add a new user
+
+# Function to update the .csv file - removes user record
+def update_csv_file(df, user, current_score):
+    user['score'] = current_score
+    # Using .loc to keep all rows that don't match the desired user_name
+    df = df.loc[df['user_name'] != user['user_name']]
+    # using .to_csv() to write to file, using index parameter to not write the row index
+    df.to_csv('user_data.csv', index=False)
+    # add the individual user record to file
+    with open('user_data.csv', 'a') as fd:
+        fd.write(f'\n{user["user_name"]},{user["name"]},{user["password"]},{str(user["score"])}')
+
+    print("\n\nThanks for playing!\n\n")
+    print("\n\nTake a look at the Scoreboard.\n\n")
+    print(print_dashboard(pd.read_csv('user_data.csv')))
+
+
+# Function to insert row into .csv with new user or updated score
+def insert_row_csv_file(player):
     with open('user_data.csv', 'a') as fd:
         fd.write(f'\n{player["user_name"]},{player["name"]},{player["password"]},{player["score"]}')
 
-    # print(player.name)
-    # print(player.user_name)
-    # result = users_df[users_df.user_name == "mando830"]
-    # if result.empty:
-    #     print("found it")
-    # else:
-    #     print("did not find record")
-    # print("test")
-    # print(result)
-    # print(result.user_name == "mando830")
-    # print("This is the Dashboard")
 
-
-    # data_dict = users_df.to_dict()
-    # print("This is the dict information")
-    # print(data_dict)
-
-    # Convert from dict to csv file
-    # df = pd.DataFrame.from_dict(data_dict)
-    # df.to_csv('test.csv', index=False, header=True)
-
-    # print(users.sort_values(by="score", ascending=False))
-    # print(f"What would you like to do {name}?: \n")
-
-    # response = ''
-    #
-    # while response != "q":
-    #     response = input("1: Stats *** 2: Play game **** q: to quit: \n")
-    #     if response == "1":
-    #         print("dashboard of winners ans score")
-    #     elif response == "2":
-    #         print("Playing game")
-    #         # hangman_game()
-    #     elif response == "q" or response =="Q":
-    #         break
-    #     else:
-    #         print("You selected an option that is not available. ")
-    # print(f"Thanks for playing {name}, see you next time!")
-
-
-#     Update the scoreboard
-
-def create_dashboard(d_frame):
-    return pd.DataFrame(d_frame, columns=["user_name", "name", "score"]).sort_values(
+# Function that prints out the Top 5 dashboard
+def print_dashboard(d_frame):
+    print("\n-----------------------------------------")
+    print("     *     Hangman's TOP 5 Player    *     ")
+    print("-----------------------------------------\n")
+    # Using sort_values() to sort DataFrame (using 'by' parameter and 'ascending'
+    # Using .head() to determine the number of records you want to print
+    # Using to_string() to convert to string and use parameter 'index' to not print index value
+    print(pd.DataFrame(d_frame, columns=["user_name", "name", "score"]).sort_values(
         by="score", ascending=False).head(
-        5).to_string(index=False)
+        5).to_string(index=False))
+    print("\n\n")
 
 
-def validate_user(df):
+# Function to create menu accepting a dict
+def create_menu(menu):
+    print("Please select from the following options:\n")
+    for key in menu.keys():
+        print(key, '--', menu[key])
+    return input("\nEnter your choice: ").lower()
+
+
+# Function to print the sub-menu banner
+def print_submenu_title():
+    print("\n-----------------------------------------")
+    print("     ***      Submenu      ***           ")
+    print("-----------------------------------------\n")
+
+
+# Function to print the main menu banner
+def print_main_menu_title():
+    print("\n-----------------------------------------")
+    print("     ***     Main Menu      ***          ")
+    print("-----------------------------------------\n")
+
+
+# Function to print a welcome banner
+def print_welcome_title(name):
+    print("\n-----------------------------------------")
+    print(f"   *    Welcome {name}!      *       ")
+    print("-----------------------------------------\n")
+
+
+# function used to allow user to create new user or retrieve old record
+def login_user(df, first_menu, second_menu):
     player = {}
     validated = False
-    while not validated:
-        response = input(
-            "Are you a returning player or new player, type in 'n' for new user or 'r' for returning").lower()
-        if response == "r":
-            response2 = input("Please type 'find' to find previous record or 'exit' to go to previous menu").lower()
-            if response2 == "find":
-                correct_user = False
-                correct_password = False
-                while not correct_user:
+    quit_program = False
+    while not validated and not quit_program:
+        print_main_menu_title()
+        response = create_menu(first_menu)
+        if response == "1":
+            done_submenu = False
+            while not done_submenu:
+                print_submenu_title()
+                response2 = create_menu(second_menu)
+                if response2 == "1":
+                    correct_user = False
+                    correct_password = False
+                    clear_console()
                     user_name = input("Please provide user name?\n")
+                    #
                     if df[df.user_name == user_name].empty:
-                        print("User name not found! Please try again\n")
+                        print("\nUser name not found! Please try again\n")
                     else:
                         correct_user = True
-
-                while not correct_password:
-                    row = df[df.user_name == user_name]
-                    password_input = input("Please enter password:\n")
-                    password_bool = row.password.to_string(index=False) == password_input
-                    if password_bool:
-                        correct_password = True
-                        player["user_name"] = row.user_name.to_string(index=False)
-                        player["name"] = row.name.to_string(index=False)
-                        player["password"] = row.password.to_string(index=False)
-                        player["score"] = row.score.to_string(index=False)
-                        validated = True
-
-                    else:
-                        print("That is the wrong password, Please try again!\n")
-
-            else:
-                continue
-
-        elif response == "n":
+                    while not correct_password and correct_user:
+                        row = df[df.user_name == user_name]
+                        password_input = input("Please enter password:\n")
+                        password_bool = row.password.to_string(index=False) == password_input
+                        if password_bool:
+                            clear_console()
+                            correct_password = True
+                            player["user_name"] = row.user_name.to_string(index=False)
+                            player["name"] = row.name.to_string(index=False)
+                            player["password"] = row.password.to_string(index=False)
+                            player["score"] = int(row.score.to_string(index=False))
+                            validated = True
+                            done_submenu = True
+                        else:
+                            clear_console()
+                            print(f"\nThat is the wrong password for user: {user_name}, Please try again!\n")
+                elif response2 == "2":
+                    done_submenu = True
+                    clear_console()
+                else:
+                    print("The selection made is not available. Try Again")
+        elif response == "2":
             unique_name = False
+            user_name = input("Please select unique user name:\n")
             while not unique_name:
-                user_name = input("Please select unique user name:\n")
                 if df[df.user_name == user_name].empty:
                     unique_name = True
                     player["user_name"] = user_name
@@ -131,36 +165,91 @@ def validate_user(df):
                     player["password"] = input("Type in a password:\n")
                     player["score"] = 0
                     validated = True
-    return player
+                else:
+                    user_name = input("User name is already taken, please try again:\n")
+        elif response == "3":
+            quit_program = True
+            clear_console()
+        else:
+            print("The selection made is not available. Try Again!")
+    return tuple((player, validated))
 
 
-def hangman_game():
-    chances = 7
-    word = game_words[randint(0, len(game_words))]
-    print(word)
-    display_word = []
+# function that clear the screen (found this online)
+def clear_console():
+    command = 'clear'
+    if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
+        command = 'cls'
+    os.system(command)
+
+
+# function to prints header throughout the game
+def game_display(lives, display_word, player_score):
+    print("\n-----------------------------------------")
+    print(f"     ***      Hangman       ***           ")
+    print("-----------------------------------------\n")
+    print(f"           PlayerScore: {player_score}  \n")
+    print("-----------------------------------------\n")
+    print(HANGMANPICS[lives])
+    print("\n\n")
+    print("  Word: " + ' '.join(display_word) + "\n\n")
+    print("\n-----------------------------------------\n")
+
+
+# Function that controls the flow of the game. Determine is letter needs to be displayed ,
+# how lives left, and points accumulation (Accepts a user score)
+def play_game(player_score: int):
+    current_score = player_score
+    clear_console()
+    lives = len(HANGMANPICS) - 1  # uses the size of the hangman images list length to determine lives
+    word = game_words[randint(0, len(game_words))]  # randomly selects a word form the list in words.py
+    print(word) # here for testing purposes
+    display_placeholder = []  # starting empty list placeholder
+    # for loops to apply '_'(underscore) as placeholder for each letter in word
     for x in word:
-        display_word.append("_")
-
+        display_placeholder.append("_")
+    # boolean to determine when while loop below is done
     game_over = False
+    # initial display banner
+    game_display(lives, display_placeholder, current_score)
+    # while loop that use game_over variable value to determine if player won or lost the game
     while not game_over:
-        guess_letter = input("Guess a letter: ")
-        if guess_letter in display_word:
-            print(f"Your already guessed this letter: {guess_letter}")
-        for x in range(len(word)):
-            character = word[x]
-            if character == guess_letter:
-                display_word[x] = guess_letter
-        print(' '.join(display_word))
-        if guess_letter not in word:
-            chances -= 1
-            print(f"Guess letter is not in the word. You have {chances} chances left ")
-            if chances == 0:
+        guess_letter = input("\n\tGuess a letter: ")
+        clear_console()
+        # If statement to determine if the guessed letter is in the random word and it has not been displayed
+        if guess_letter in word and guess_letter not in display_placeholder:
+            for x in range(len(word)):
+                character = word[x]
+                if character == guess_letter:
+                    print("\nAwesome! guess letter is found.")
+                    display_placeholder[x] = guess_letter
+                    current_score += 10
+            # if after found letter are displayed then it checks to see if there are any '_' (underscore)
+            # left in display placeholder, if true then user winds game
+            if "_" not in display_placeholder:
+                clear_console()
                 game_over = True
-                print("You lost this round")
-        if "_" not in display_word:
-            game_over = True
-            print("Awesome you won!")
+                print("\nAwesome you won!\n")
+        # checks to see if letter is in random word but has already been displayed
+        elif guess_letter in display_placeholder:
+            print(f"\nYour already guessed the letter: {guess_letter}")
+        # If statement when letter is not in word then user looses a live, points are lost, and checks
+        # to see if you are out of lives
+        if guess_letter not in word:
+            clear_console()
+            current_score -= 1
+            lives -= 1
+            print(f"\nGuess letter \'{guess_letter}\' is not in the word. You have {lives} lives left ")
+            # Checks to see if user is out of lives, if true then user looses game
+            if lives == 0:
+                clear_console()
+                current_score -= 10
+                game_over = True
+                print("\nYou lost this round")
+        # displays updated banner
+        game_display(lives, display_placeholder, current_score)
+    return current_score
 
 
-main()
+if __name__ == '__main__':
+    start()
