@@ -7,6 +7,7 @@ from menus import main_menu, sub_menu, opening_menu
 import os
 
 
+# Initial function that get called to start the application
 def start():
     # Greeting at the star of application
     print(title)
@@ -39,6 +40,7 @@ def start():
     print("\n\nSee you next time....")
 
 
+# Function to update the .csv file - removes user record
 def update_csv_file(df, user, current_score):
     user['score'] = current_score
     df = df.loc[df['user_name'] != user['user_name']]
@@ -51,11 +53,13 @@ def update_csv_file(df, user, current_score):
     print(print_dashboard(pd.read_csv('user_data.csv')))
 
 
+# Function to insert row into .csv with new user or updated score
 def insert_row_csv_file(player):
     with open('user_data.csv', 'a') as fd:
         fd.write(f'\n{player["user_name"]},{player["name"]},{player["password"]},{player["score"]}')
 
 
+# Function that prints out the Top 5 dashboard
 def print_dashboard(d_frame):
     print("\n-----------------------------------------")
     print("     *     Hangman's TOP 5 Player    *     ")
@@ -66,6 +70,7 @@ def print_dashboard(d_frame):
     # print("\n\n")
 
 
+# Function to create menu accepting a dict
 def create_menu(menu):
     print("Please select from the following options:\n")
     for key in menu.keys():
@@ -73,24 +78,28 @@ def create_menu(menu):
     return input("\nEnter your choice: ").lower()
 
 
+# Function to print the sub-menu banner
 def print_submenu_title():
     print("\n-----------------------------------------")
     print("     ***      Submenu      ***           ")
     print("-----------------------------------------\n")
 
 
+# Function to print the main menu banner
 def print_main_menu_title():
     print("\n-----------------------------------------")
     print("     ***     Main Menu      ***          ")
     print("-----------------------------------------\n")
 
 
+# Function to print a welcome banner
 def print_welcome_title(name):
     print("\n-----------------------------------------")
     print(f"   *    Welcome {name}!      *       ")
     print("-----------------------------------------\n")
 
 
+# function used to allow user to create new user or retrieve old record
 def login_user(df, first_menu, second_menu):
     player = {}
     validated = False
@@ -154,6 +163,7 @@ def login_user(df, first_menu, second_menu):
     return tuple((player, validated))
 
 
+# function that clear the screen
 def clear_console():
     command = 'clear'
     if os.name in ('nt', 'dos'):  # If Machine is running on Windows, use cls
@@ -161,6 +171,7 @@ def clear_console():
     os.system(command)
 
 
+# function to prints header throughout the game
 def game_display(lives, display_word, player_score):
     print("\n-----------------------------------------")
     print(f"     ***      Hangman       ***           ")
@@ -181,7 +192,7 @@ def play_game(player_score: int):
     lives = len(HANGMANPICS) - 1  # uses the size of the hangman images list length to determine lives
     word = game_words[randint(0, len(game_words))]  # randomly selects a word form the list in words.py
     # print(word) #here for testing purposes
-    display_placeholder = []     # starting empty list placeholder
+    display_placeholder = []  # starting empty list placeholder
     # for loops to apply '_'(underscore) as placeholder for each letter in word
     for x in word:
         display_placeholder.append("_")
