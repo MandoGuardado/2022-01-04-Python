@@ -1,6 +1,7 @@
 from header import title
 from words import game_words
 from random import randint
+from hangman_images import HANGMANPICS
 import pandas as pd
 from menus import main_menu, sub_menu, opening_menu
 import os
@@ -23,7 +24,7 @@ def main():
         while not finish_playing:
             response = print_menu_options(opening_menu)
             if response == "1":
-                total_player_score += hangman_game(total_player_score)
+                total_player_score = hangman_game(total_player_score)
             elif response == "2":
                 clear_console()
                 print_dashboard(users_df)
@@ -35,9 +36,10 @@ def main():
         # TODO Save score into user_data.csv with update score (using method)
     else:
         print("In order to play you must retrieve your old record or create a new one. Please come back soon ")
-
-    print(player)
-    print("See you next time....")
+    # Testing purposeses
+    # hangman_game(0)
+    # print(player)
+    print("\n\nSee you next time....")
 
 
 def update_player(player):
@@ -163,36 +165,43 @@ def game_display(lives, display_word, player_score):
 
 
 def hangman_game(player_score):
-    chances = 7
+    current_score = player_score
+    clear_console()
+    lives = len(HANGMANPICS) - 1
     word = game_words[randint(0, len(game_words))]
     print(word)
     display_word = []
     for x in word:
         display_word.append("_")
-
     game_over = False
+    game_display(lives, display_word, current_score)
     while not game_over:
-        guess_letter = input("Guess a letter: ")
+        guess_letter = input("\n\tGuess a letter: ")
+        clear_console()
         if guess_letter in display_word:
-            print(f"Your already guessed this letter: {guess_letter}")
+            print(f"\nYour already guessed the letter: {guess_letter}")
         for x in range(len(word)):
             character = word[x]
             if character == guess_letter:
+                print("\nAwesome! guess letter is found.")
                 display_word[x] = guess_letter
-                player_score += 5
-        print(' '.join(display_word))
+                current_score += 10
         if guess_letter not in word:
-            player_score -= 1
-            chances -= 1
-            print(f"Guess letter is not in the word. You have {chances} chances left ")
-            if chances == 0:
-                player_score -= 10
+            clear_console()
+            current_score -= 1
+            lives -= 1
+            print(f"\nGuess letter \'{guess_letter}\' is not in the word. You have {lives} lives left ")
+            if lives == 0:
+                clear_console()
+                current_score -= 10
                 game_over = True
-                print("You lost this round")
+                print("\nYou lost this round")
         if "_" not in display_word:
+            clear_console()
             game_over = True
-            print("Awesome you won!")
-    return player_score
+            print("\nAwesome you won!\n")
+        game_display(lives, display_word, current_score)
+    return current_score
 
 
 main()
