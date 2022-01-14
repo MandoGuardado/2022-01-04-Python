@@ -124,7 +124,7 @@ def validate_user(df, first_menu, second_menu):
                             player["user_name"] = row.user_name.to_string(index=False)
                             player["name"] = row.name.to_string(index=False)
                             player["password"] = row.password.to_string(index=False)
-                            player["score"] = row.score.to_string(index=False)
+                            player["score"] = int(row.score.to_string(index=False))
                             validated = True
                             done_submenu = True
                         else:
