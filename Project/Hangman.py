@@ -150,6 +150,18 @@ def clear_console():
     os.system(command)
 
 
+def game_display(lives, display_word, player_score):
+    print("\n-----------------------------------------")
+    print(f"     ***      Hangman       ***           ")
+    print("-----------------------------------------\n")
+    print(f"           PlayerScore: {player_score}  \n")
+    print("-----------------------------------------\n")
+    print(HANGMANPICS[lives])
+    print("\n\n")
+    print("  Word: " + ' '.join(display_word) + "\n\n")
+    print("\n-----------------------------------------\n")
+
+
 def hangman_game(player_score):
     chances = 7
     word = game_words[randint(0, len(game_words))]
