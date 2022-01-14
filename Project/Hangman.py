@@ -40,14 +40,13 @@ def start():
 
 
 def update_csv_file(df, user, current_score):
-    if current_score > user['score']:
-        user['score'] = current_score
-        df = df.loc[df['user_name'] != user['user_name']]
-        df.to_csv('user_data.csv', index=False)
-        with open('user_data.csv', 'a') as fd:
-            fd.write(f'\n{user["user_name"]},{user["name"]},{user["password"]},{str(user["score"])}')
-    else:
-        print("\n\nRecord was not update or created.")
+
+    user['score'] = current_score
+    df = df.loc[df['user_name'] != user['user_name']]
+    df.to_csv('user_data.csv', index=False)
+    with open('user_data.csv', 'a') as fd:
+        fd.write(f'\n{user["user_name"]},{user["name"]},{user["password"]},{str(user["score"])}')
+
     print("\n\nThanks for playing!\n\n")
     print("\n\nTake a look at the Scoreboard.\n\n")
     print(print_dashboard(pd.read_csv('user_data.csv')))
