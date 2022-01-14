@@ -42,6 +42,20 @@ def main():
     print("\n\nSee you next time....")
 
 
+def update_user_records(df, user, current_score):
+    if current_score > user['score']:
+        user['score'] = current_score
+        df = df.loc[df['user_name'] != user['user_name']]
+        df.to_csv('user_data.csv', index=False)
+        with open('user_data.csv', 'a') as fd:
+            fd.write(f'\n{user["user_name"]},{user["name"]},{user["password"]},{str(user["score"])}')
+    else:
+        print("\n\nRecord was not update or created.")
+    print("\n\nThanks for playing!\n\n")
+    print("\n\nTake a look at our Scoreboard.\n\n")
+    print(print_dashboard(pd.read_csv('user_data.csv')))
+
+
 def update_player(player):
     with open('user_data.csv', 'a') as fd:
         fd.write(f'\n{player["user_name"]},{player["name"]},{player["password"]},{player["score"]}')
