@@ -7,7 +7,7 @@ from menus import main_menu, sub_menu, opening_menu
 import os
 
 
-def main():
+def start():
     # Greeting at the star of application
     print(title)
     input("Press enter to continue...\n")
@@ -22,7 +22,7 @@ def main():
         finish_playing = False
         total_player_score = int(player['score'])
         while not finish_playing:
-            response = print_menu_options(opening_menu)
+            response = create_menu(opening_menu)
             if response == "1":
                 total_player_score = hangman_game(total_player_score)
             elif response == "2":
@@ -71,7 +71,7 @@ def print_dashboard(d_frame):
     print("\n\n")
 
 
-def print_menu_options(menu):
+def create_menu(menu):
     print("Please select from the following options:\n")
     for key in menu.keys():
         print(key, '--', menu[key])
@@ -102,12 +102,12 @@ def validate_user(df, first_menu, second_menu):
     quit_program = False
     while not validated and not quit_program:
         print_main_menu_banner()
-        response = print_menu_options(first_menu)
+        response = create_menu(first_menu)
         if response == "1":
             done_submenu = False
             while not done_submenu:
-                print_submenu_banner()
-                response2 = print_menu_options(second_menu)
+                print_submenu_options()
+                response2 = create_menu(second_menu)
                 if response2 == "1":
                     correct_user = False
                     correct_password = False
@@ -218,4 +218,5 @@ def hangman_game(player_score):
     return current_score
 
 
-main()
+if __name__ == '__main__':
+    start()
